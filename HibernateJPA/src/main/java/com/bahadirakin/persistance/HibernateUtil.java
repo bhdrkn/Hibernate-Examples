@@ -7,6 +7,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate Utility
@@ -17,6 +19,8 @@ import org.joda.time.PeriodType;
 public class HibernateUtil {
 
 	private static final int SESSION_FACTORY_EXPIRE_IN_HOUR = 5;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateUtil.class);
 
 	/**
 	 * One and Only SessionFacotry
@@ -58,8 +62,7 @@ public class HibernateUtil {
 						.buildSessionFactory();
 			}
 		} catch (Exception e) {
-			System.out
-					.println("Exception in getFactory while creating new Factory M:"
+			LOG.error("Exception in getFactory while creating new Factory M:"
 							+ e.getMessage()
 							+ " C: "
 							+ e.getCause()
@@ -74,7 +77,7 @@ public class HibernateUtil {
 		try {
 			return getFactory().getCurrentSession();
 		} catch (Exception e) {
-			System.out.println("Exception in getCurrentSession M: "
+			LOG.error("Exception in getCurrentSession M: "
 					+ e.getMessage() + " C: " + e.getCause());
 		}
 		return null;
@@ -94,7 +97,7 @@ public class HibernateUtil {
 			Session session = this.getCurrentSession();
 			session.beginTransaction().commit();
 		} catch (Exception e) {
-			System.out.println("Error while syncronizing with Database. M: "
+			LOG.error("Error while syncronizing with Database. M: "
 					+ e.getMessage() + " C: " + e.getCause());
 		}
 	}
@@ -113,7 +116,7 @@ public class HibernateUtil {
 			return (period.getHours() > SESSION_FACTORY_EXPIRE_IN_HOUR)
 					| (period.getHours() < (SESSION_FACTORY_EXPIRE_IN_HOUR * -1));
 		} catch (Exception e) {
-			System.out.println("Exception in isLastAccessTimeNotOK M:"
+			LOG.error("Exception in isLastAccessTimeNotOK M:"
 					+ e.getMessage() + " C: " + e.getCause() + " ST: "
 					+ e.getStackTrace());
 		}

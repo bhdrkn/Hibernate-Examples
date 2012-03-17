@@ -1,5 +1,6 @@
 package com.bahadirakin.persistance.dao;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.bahadirakin.persistance.model.IEntity;
@@ -12,7 +13,7 @@ import com.bahadirakin.persistance.model.IEntity;
  * @param IEntity
  *            Class
  */
-public interface IBaseDAO<T extends IEntity> {
+public interface IBaseDAO<T extends IEntity> extends Serializable{
 
 	/**
 	 * Insert a new entity;

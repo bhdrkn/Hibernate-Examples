@@ -8,13 +8,15 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.bahadirakin.persistance.HibernateUtil;
 import com.bahadirakin.persistance.dao.IBaseDAO;
 import com.bahadirakin.persistance.model.IEntity;
 
 /**
- * Contains common operations for all Entities
+ * Contains common operations for all Entities DAO
  * 
  * @author Bahadır AKIN
  * 
@@ -24,6 +26,11 @@ import com.bahadirakin.persistance.model.IEntity;
 @SuppressWarnings("unchecked")
 public abstract class BaseHibernateDAO<T extends IEntity> implements
 		IBaseDAO<T> {
+
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = LoggerFactory
+			.getLogger(BaseHibernateDAO.class);
 
 	private HibernateUtil hibernateUtil;
 	private Class<T> persistentClass;
@@ -58,8 +65,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.save(entity);
 			transaction.commit();
 		} catch (HibernateException e) {
-			System.out.println("Error while saving Entity. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while saving Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 	}
 
@@ -74,8 +81,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.saveOrUpdate(entity);
 			transaction.commit();
 		} catch (HibernateException e) {
-			System.out.println("Error while saveOrUpdate Entity. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while saveOrUpdate Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 	}
 
@@ -90,8 +97,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.delete(entity);
 			transaction.commit();
 		} catch (HibernateException e) {
-			System.out.println("Error while delete Entity. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while delete Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 	}
 
@@ -106,8 +113,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.evict(entity);
 			transaction.commit();
 		} catch (Exception e) {
-			System.out.println("Error while detach Entity. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while detach Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 	}
 
@@ -122,8 +129,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.refresh(entity);
 			transaction.commit();
 		} catch (Exception e) {
-			System.out.println("Error while refresh Entity. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while refresh Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 	}
 
@@ -137,8 +144,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.beginTransaction();
 			entity = (T) session.load(getPersistentClass(), id);
 		} catch (Exception e) {
-			System.out.println("Error while getById Entity. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while getById Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 		return entity;
 	}
@@ -153,8 +160,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			List<T> list = session.createCriteria(getPersistentClass()).list();
 			return list;
 		} catch (Exception e) {
-			System.out.println("Error while getAll Entities. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while getAll Entities. M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
 		return null;
 	}
@@ -170,10 +177,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			entity = (T) session.createSQLQuery(query)
 					.addEntity(getPersistentClass()).uniqueResult();
 		} catch (Exception e) {
-			System.out
-					.println("Error while getWithSql Entity. M: "
-							+ e.getMessage() + " C: " + e.getCause() + " SQL: "
-							+ query);
+			LOG.error("Error while getWithSql Entity. M: " + e.getMessage()
+					+ " C: " + e.getCause() + " SQL: " + query);
 		}
 		return entity;
 	}
@@ -188,14 +193,12 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			return session.createSQLQuery(query)
 					.addEntity(getPersistentClass()).list();
 		} catch (Exception e) {
-			System.out
-					.println("Error while getAllWithSql Entities. M: "
-							+ e.getMessage() + " C: " + e.getCause() + " SQL: "
-							+ query);
+			LOG.error("Error while getAllWithSql Entities. M: "
+					+ e.getMessage() + " C: " + e.getCause() + " SQL: " + query);
 		}
 		return null;
 	}
-	
+
 	public void executeSQLQuery(String query) {
 		try {
 			Session session = this.getCurrentSession();
@@ -203,10 +206,8 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			session.createSQLQuery(query).addEntity(getPersistentClass())
 					.executeUpdate();
 		} catch (Exception e) {
-			System.out
-					.println("Error while executeSQLQuery Entities. M: "
-							+ e.getMessage() + " C: " + e.getCause() + " SQL: "
-							+ query);
+			LOG.error("Error while executeSQLQuery Entities. M: "
+					+ e.getMessage() + " C: " + e.getCause() + " SQL: " + query);
 		}
 	}
 
@@ -224,7 +225,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			}
 			return criteria.list();
 		} catch (Exception e) {
-			System.out.println("Error while findAllByCriteria Entities. M: "
+			LOG.error("Error while findAllByCriteria Entities. M: "
 					+ e.getMessage() + " C: " + e.getCause());
 		}
 		return null;
@@ -243,7 +244,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			}
 			return (T) criteria.uniqueResult();
 		} catch (Exception e) {
-			System.out.println("Error while findByCriteria Entities. M: "
+			LOG.error("Error while findByCriteria Entities. M: "
 					+ e.getMessage() + " C: " + e.getCause());
 		}
 		return null;
