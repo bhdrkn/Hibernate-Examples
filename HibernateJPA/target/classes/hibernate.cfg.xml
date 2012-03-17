@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://[hostaddress]:3306/[dbname]?useUnicode=true&amp;characterEncoding=UTF-8</property>
+		<property name="hibernate.default_schema">[dbname]</property>
+		<property name="hibernate.connection.username">[username]</property>
+		<property name="hibernate.connection.password">[password]</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property> 
+		<!--  
+		<property name="hibernate.current_session_context_class">org.hibernate.context.JTASessionContext</property>
+		<property name="jta.UserTransaction">java:comp/UserTransaction</property>
+		-->
+		<!--  <property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property> -->
+		<!-- <property name="hibernate.show_sql" >false</property>   <property name="hibernate.format_sql">true</property>  -->	
+	</session-factory>
+</hibernate-configuration>
