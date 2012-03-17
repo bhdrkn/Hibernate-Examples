@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,7 +24,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
  * 
  */
 @Entity
-@Table(name = "customerorder")
+@Table(name = "customerorder" )
 public class CustomerOrder extends AbstractEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -80,9 +81,9 @@ public class CustomerOrder extends AbstractEntity {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
+	
 	@ManyToOne(targetEntity = Customer.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "customerid", referencedColumnName = "id")
+	@JoinColumn(name = "customerid", referencedColumnName = "id", updatable = true, insertable = true)
 	public Customer getCustomer() {
 		return customer;
 	}
