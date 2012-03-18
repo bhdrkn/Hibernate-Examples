@@ -1,0 +1,5 @@
+<!DOCTYPE dataset SYSTEM "my-dataset.dtd">
+<dataset>
+    <CUSTOMER ID="123" NAME="Bahadır AKIN" ADDRESS="Ortaköy" CITY="İstanbul" PHONE="555-5555555" />
+    <CUSTOMERORDER ID="321" CUSTOMERID="123" DATEPLACED="2012-12-31" DATEPROMISED="2012-12-12" STATUS="Statusm"/>
+</dataset>
