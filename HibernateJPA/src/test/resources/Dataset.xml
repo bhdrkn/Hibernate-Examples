@@ -1,0 +1,6 @@
+<!DOCTYPE dataset SYSTEM "my-dataset.dtd">
+<dataset>
+    <TABLE_NAME1 COL1="<data1.1>" COL2="<data1.2>"/>
+    <TABLE_NAME1 COL1="<data2.1>" COL2="<data2.2>"/>
+    <TABLE_NAME2 COL1="<data1.1>" COL2="<data1.2>"/>
+</dataset>
