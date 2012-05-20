@@ -1,27 +1,23 @@
 /*
-*   Copyright 2012 Bahadır AKIN
-*
-*   Licensed under the Apache License, Version 2.0 (the "License");
-*   you may not use this file except in compliance with the License.
-*   You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-*   Unless required by applicable law or agreed to in writing, software
-*   distributed under the License is distributed on an "AS IS" BASIS,
-*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*   See the License for the specific language governing permissions and
-*   limitations under the License.
-*/
+ *   Copyright 2012 Bahadır AKIN
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package com.bahadirakin.persistance;
-
-import java.util.Date;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,20 +29,13 @@ import org.slf4j.LoggerFactory;
  */
 public class HibernateUtil {
 
-	private static final int SESSION_FACTORY_EXPIRE_IN_HOUR = 5;
-	
-	private static final Logger LOG = LoggerFactory.getLogger(HibernateUtil.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(HibernateUtil.class);
 
 	/**
 	 * One and Only SessionFacotry
 	 */
 	private SessionFactory factory = null;
-
-	/**
-	 * If there is no AccessTo sessionFactory in
-	 * {@link #SESSION_FACTORY_EXPIRE_IN_HOUR} factory is re initialized.
-	 */
-	private Date lastAccess;
 
 	/**
 	 * Singleton Pattern
@@ -61,7 +50,7 @@ public class HibernateUtil {
 	}
 
 	private HibernateUtil() {
-		lastAccess = new Date(System.currentTimeMillis());
+		// Constructor
 	}
 
 	public SessionFactory getFactory() {
@@ -72,70 +61,23 @@ public class HibernateUtil {
 			} else if (factory.isClosed()) {
 				factory = new AnnotationConfiguration().configure()
 						.buildSessionFactory();
-			} else if (isLastAccessTimeNotOK()) {
-				factory = new AnnotationConfiguration().configure()
-						.buildSessionFactory();
 			}
 		} catch (Exception e) {
 			LOG.error("Exception in getFactory while creating new Factory M:"
-							+ e.getMessage()
-							+ " C: "
-							+ e.getCause()
-							+ " ST: "
-							+ e.getStackTrace());
+					+ e.getMessage() + " C: " + e.getCause() + " ST: "
+					+ e.getStackTrace());
 		}
-		lastAccess = new Date(System.currentTimeMillis());
 		return factory;
 	}
 
 	public Session getCurrentSession() {
+		Session session = null;
 		try {
-			return getFactory().getCurrentSession();
+			session = getFactory().getCurrentSession();
 		} catch (Exception e) {
-			LOG.error("Exception in getCurrentSession M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Exception in getCurrentSession M: " + e.getMessage()
+					+ " C: " + e.getCause());
 		}
-		return null;
+		return session;
 	}
-
-	/**
-	 * Synchronize database and hibernate session. Use with caution.
-	 * 
-	 * <p>
-	 * If your database has access from other application you will need
-	 * synchronize with database.
-	 * </p>
-	 * 
-	 */
-	public void synchronize() {
-		try {
-			Session session = this.getCurrentSession();
-			session.beginTransaction().commit();
-		} catch (Exception e) {
-			LOG.error("Error while syncronizing with Database. M: "
-					+ e.getMessage() + " C: " + e.getCause());
-		}
-	}
-
-	/**
-	 * Checks if session Factory is Alive or Not. Session Factory become dead if
-	 * last access time past 3 hours
-	 * 
-	 * @return True if SessionFactory is dead
-	 */
-	private synchronized boolean isLastAccessTimeNotOK() {
-		try {
-			Date now = new Date(System.currentTimeMillis());
-			Period period = new Period(now.getTime(), lastAccess.getTime());
-			period = period.normalizedStandard(PeriodType.hours());
-			return (period.getHours() > SESSION_FACTORY_EXPIRE_IN_HOUR)
-					| (period.getHours() < (SESSION_FACTORY_EXPIRE_IN_HOUR * -1));
-		} catch (Exception e) {
-			LOG.error("Exception in isLastAccessTimeNotOK M:"
-					+ e.getMessage() + " C: " + e.getCause() + " ST: "
-					+ e.getStackTrace());
-		}
-		return false;
-	}
-
 }

@@ -1,18 +1,18 @@
 /*
-*   Copyright 2012 Bahadır AKIN
-*
-*   Licensed under the Apache License, Version 2.0 (the "License");
-*   you may not use this file except in compliance with the License.
-*   You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-*   Unless required by applicable law or agreed to in writing, software
-*   distributed under the License is distributed on an "AS IS" BASIS,
-*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*   See the License for the specific language governing permissions and
-*   limitations under the License.
-*/
+ *   Copyright 2012 Bahadır AKIN
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package com.bahadirakin.persistance.dao.impl;
 
 import java.lang.reflect.ParameterizedType;
@@ -59,10 +59,6 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 
 	protected Session getCurrentSession() {
 		return hibernateUtil.getCurrentSession();
-	}
-
-	protected void synchronize() {
-		hibernateUtil.synchronize();
 	}
 
 	public Class<T> getPersistentClass() {
@@ -149,15 +145,13 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		}
 	}
 
-	public T getById(Integer id, boolean synchronize) {
+	public T getById(Integer id) {
 		T entity = null;
 		try {
-			if (synchronize) {
-				this.synchronize();
-			}
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
+			Transaction transaction = session.beginTransaction();
 			entity = (T) session.load(getPersistentClass(), id);
+			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while getById Entity. M: " + e.getMessage()
 					+ " C: " + e.getCause());
@@ -165,14 +159,12 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		return entity;
 	}
 
-	public List<T> getAll(boolean synchronize) {
+	public List<T> getAll() {
 		try {
-			if (synchronize) {
-				this.synchronize();
-			}
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
+			Transaction transaction = session.beginTransaction();
 			List<T> list = session.createCriteria(getPersistentClass()).list();
+			transaction.commit();
 			return list;
 		} catch (Exception e) {
 			LOG.error("Error while getAll Entities. M: " + e.getMessage()
@@ -181,16 +173,14 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		return null;
 	}
 
-	public T getBySql(String query, boolean synchronize) {
+	public T getBySql(String query) {
 		T entity = null;
 		try {
-			if (synchronize) {
-				this.synchronize();
-			}
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
+			Transaction transaction = session.beginTransaction();
 			entity = (T) session.createSQLQuery(query)
 					.addEntity(getPersistentClass()).uniqueResult();
+			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while getWithSql Entity. M: " + e.getMessage()
 					+ " C: " + e.getCause() + " SQL: " + query);
@@ -198,71 +188,68 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		return entity;
 	}
 
-	public List<T> getAllBySql(String query, boolean synchronize) {
+	public List<T> getAllBySql(String query) {
+		List<T> ts = null;
 		try {
-			if (synchronize) {
-				this.synchronize();
-			}
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
-			return session.createSQLQuery(query)
-					.addEntity(getPersistentClass()).list();
+			Transaction transaction = session.beginTransaction();
+			ts = session.createSQLQuery(query).addEntity(getPersistentClass())
+					.list();
+			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while getAllWithSql Entities. M: "
 					+ e.getMessage() + " C: " + e.getCause() + " SQL: " + query);
 		}
-		return null;
+		return ts;
 	}
 
 	public void executeSQLQuery(String query) {
 		try {
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
+			Transaction transaction = session.beginTransaction();
 			session.createSQLQuery(query).addEntity(getPersistentClass())
 					.executeUpdate();
+			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while executeSQLQuery Entities. M: "
 					+ e.getMessage() + " C: " + e.getCause() + " SQL: " + query);
 		}
 	}
 
-	protected List<T> findAllByCriteria(boolean synchronize,
-			Criterion... criterions) {
+	protected List<T> findAllByCriteria(Criterion... criterions) {
+		List<T> ts = null;
 		try {
-			if (synchronize) {
-				this.synchronize();
-			}
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
+			Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(getPersistentClass());
 			for (Criterion criterion : criterions) {
 				criteria.add(criterion);
 			}
-			return criteria.list();
+			ts = criteria.list();
+			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while findAllByCriteria Entities. M: "
 					+ e.getMessage() + " C: " + e.getCause());
 		}
-		return null;
+		return ts;
 	}
 
-	protected T findByCriteria(boolean synchronize, Criterion... criterions) {
+	protected T findByCriteria(Criterion... criterions) {
+		T t = null;
 		try {
-			if (synchronize) {
-				this.synchronize();
-			}
 			Session session = this.getCurrentSession();
-			session.beginTransaction();
+			Transaction transaction = session.beginTransaction();
 			Criteria criteria = session.createCriteria(getPersistentClass());
 			for (Criterion criterion : criterions) {
 				criteria.add(criterion);
 			}
-			return (T) criteria.uniqueResult();
+			t = (T) criteria.uniqueResult();
+			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while findByCriteria Entities. M: "
 					+ e.getMessage() + " C: " + e.getCause());
 		}
-		return null;
+		return t;
 	}
 
 }

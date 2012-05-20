@@ -1,18 +1,18 @@
 /*
-*   Copyright 2012 Bahadır AKIN
-*
-*   Licensed under the Apache License, Version 2.0 (the "License");
-*   you may not use this file except in compliance with the License.
-*   You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-*   Unless required by applicable law or agreed to in writing, software
-*   distributed under the License is distributed on an "AS IS" BASIS,
-*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*   See the License for the specific language governing permissions and
-*   limitations under the License.
-*/
+ *   Copyright 2012 Bahadır AKIN
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package com.bahadirakin.persistance.dao;
 
 import java.io.Serializable;
@@ -78,11 +78,10 @@ public interface IBaseDAO<T extends IEntity> extends Serializable {
 	 * 
 	 * @param id
 	 *            Id of entity
-	 * @param synchronize
-	 *            True if there is other access to persistence store
+	 * 
 	 * @return
 	 */
-	T getById(Integer id, boolean synchronize);
+	T getById(Integer id);
 
 	/**
 	 * Gets all the entities from persistence store.
@@ -92,11 +91,9 @@ public interface IBaseDAO<T extends IEntity> extends Serializable {
 	 * <code>true</code>. Otherwise some of entities may not be found.
 	 * </p>
 	 * 
-	 * @param synchronize
-	 *            True if there is other access to persistence store
 	 * @return
 	 */
-	List<T> getAll(boolean synchronize);
+	List<T> getAll();
 
 	/**
 	 * Gets an Entity by executing given SQL query.
@@ -107,11 +104,10 @@ public interface IBaseDAO<T extends IEntity> extends Serializable {
 	 * 
 	 * @param query
 	 *            SQL Query
-	 * @param synchronize
-	 *            True if there is other access to persistence store
+	 * 
 	 * @return Unique Result
 	 */
-	T getBySql(String query, boolean synchronize);
+	T getBySql(String query);
 
 	/**
 	 * Gets All Entities by executing given SQL query.
@@ -122,11 +118,10 @@ public interface IBaseDAO<T extends IEntity> extends Serializable {
 	 * 
 	 * @param query
 	 *            SQL Query
-	 * @param synchronize
-	 *            True if there is other access to persistence store
+	 * 
 	 * @return List of Result
 	 */
-	List<T> getAllBySql(String query, boolean synchronize);
+	List<T> getAllBySql(String query);
 
 	/**
 	 * Executes given Sql query.

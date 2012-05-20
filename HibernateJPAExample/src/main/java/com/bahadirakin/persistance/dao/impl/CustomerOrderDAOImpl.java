@@ -29,7 +29,7 @@ public class CustomerOrderDAOImpl extends BaseHibernateDAO<CustomerOrder>
 	private static final long serialVersionUID = 1L;
 
 	public List<CustomerOrder> getAllByCustomer(Customer customer) {
-		return findAllByCriteria(true, Restrictions.eq("customer", customer));
+		return findAllByCriteria(Restrictions.eq("customer", customer));
 	}
 
 }

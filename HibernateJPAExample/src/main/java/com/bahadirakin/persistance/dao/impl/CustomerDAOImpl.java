@@ -28,11 +28,11 @@ public class CustomerDAOImpl extends BaseHibernateDAO<Customer> implements
 	private static final long serialVersionUID = 1L;
 
 	public List<Customer> getAllByName(String name) {
-		return findAllByCriteria(true, Restrictions.eq("name", name));
+		return findAllByCriteria(Restrictions.eq("name", name));
 	}
 
 	public List<Customer> getAllByCity(String city) {
-		return findAllByCriteria(true, Restrictions.eq("city", city));
+		return findAllByCriteria(Restrictions.eq("city", city));
 	}
 
 }

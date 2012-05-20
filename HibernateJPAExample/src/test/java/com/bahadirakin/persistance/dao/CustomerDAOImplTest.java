@@ -43,15 +43,15 @@ public class CustomerDAOImplTest extends BaseDAOTestHibernateImpl{
 	@Test
 	public void assertDB() {
 		ICustomerDAO customerDAO = new CustomerDAOImpl();
-		Customer customer = customerDAO.getById(123, false);
+		Customer customer = customerDAO.getById(123);
         ICustomerOrderDAO customerOrderDAO = new CustomerOrderDAOImpl();
-        CustomerOrder customerOrder = customerOrderDAO.getById(321, false);
+        CustomerOrder customerOrder = customerOrderDAO.getById(321);
  
         
         customerOrderDAO.delete(customerOrder);
         customerDAO.delete(customer);
-        Assert.assertTrue(customerDAO.getAll(true).size() == 0);
-        Assert.assertTrue(customerOrderDAO.getAll(true).size() == 0);
+        Assert.assertTrue(customerDAO.getAll().size() == 0);
+        Assert.assertTrue(customerOrderDAO.getAll().size() == 0);
 	}
 
 }

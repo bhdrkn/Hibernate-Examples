@@ -47,14 +47,14 @@ public class App
         
         System.out.println("================");
         System.out.println("==== INSERT ====");
-        System.err.println(customerOrderDAO.getAll(true).size());
+        System.err.println(customerOrderDAO.getAll().size());
         System.out.println(customerOrderDAO.getAllByCustomer(customer).size());
         System.out.println("================");
         
         System.out.println("================");
         System.out.println("DELETE - CASCADE");
         customerDAO.delete(customer);
-        System.err.println(customerOrderDAO.getAll(true).size());
+        System.err.println(customerOrderDAO.getAll().size());
         System.out.println(customerOrderDAO.getAllByCustomer(customer).size());
         System.out.println("================");
     }

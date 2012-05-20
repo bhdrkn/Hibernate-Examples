@@ -9,9 +9,9 @@
 
 	<name>HibernateJPAExample</name>
 	<url>http://www.bahadirakin.com</url>
-    
-    <description>Hibernate JPA Template Example</description>
-    
+
+	<description>Hibernate JPA Template Example</description>
+
 	<developers>
 		<developer>
 			<id>1</id>
@@ -23,16 +23,17 @@
 			</roles>
 		</developer>
 	</developers>
-	
+
 	<licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<properties>
+		<hibernate.version>3.5.6-Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -65,7 +66,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
-			<version>3.5.6-Final</version>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -81,6 +82,11 @@
 			<groupId>jboss</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.7.ga</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<!-- DEPENDENCIES FOR TESTING -->
 		<dependency>
@@ -102,5 +108,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 </project>
