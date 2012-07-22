@@ -36,7 +36,7 @@ public interface IBaseDAO<T extends IEntity> extends Serializable {
 	 * @param entity
 	 *            - detached entity object
 	 */
-	public void save(T entity);
+	public Serializable save(T entity);
 
 	/**
 	 * Inserts a new detached entity or updates if entity already exists

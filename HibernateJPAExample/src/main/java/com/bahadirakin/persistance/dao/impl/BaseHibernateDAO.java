@@ -15,6 +15,7 @@
  */
 package com.bahadirakin.persistance.dao.impl;
 
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
@@ -23,6 +24,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +68,9 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		return persistentClass;
 	}
 
-	public void save(T entity) {
+	public Serializable save(T entity) {
+		Serializable serializable = null;
+
 		if (entity == null) {
 			throw new IllegalArgumentException("Entity must not be null");
 		}
@@ -73,12 +78,13 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		try {
 			Session session = this.getCurrentSession();
 			Transaction transaction = session.beginTransaction();
-			session.save(entity);
+			serializable = session.save(entity);
 			transaction.commit();
 		} catch (HibernateException e) {
 			LOG.error("Error while saving Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
+		return serializable;
 	}
 
 	public void saveOrUpdate(T entity) {
@@ -93,7 +99,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			transaction.commit();
 		} catch (HibernateException e) {
 			LOG.error("Error while saveOrUpdate Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
 	}
 
@@ -109,7 +115,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			transaction.commit();
 		} catch (HibernateException e) {
 			LOG.error("Error while delete Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
 	}
 
@@ -125,7 +131,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while detach Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
 	}
 
@@ -141,7 +147,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while refresh Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
 	}
 
@@ -150,11 +156,11 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		try {
 			Session session = this.getCurrentSession();
 			Transaction transaction = session.beginTransaction();
-			entity = (T) session.load(getPersistentClass(), id);
+			entity = (T) session.get(getPersistentClass(), id);
 			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while getById Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
 		return entity;
 	}
@@ -168,7 +174,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			return list;
 		} catch (Exception e) {
 			LOG.error("Error while getAll Entities. M: " + e.getMessage()
-					+ " C: " + e.getCause());
+					+ " C: " + e.getCause(), e);
 		}
 		return null;
 	}
@@ -183,7 +189,7 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 			transaction.commit();
 		} catch (Exception e) {
 			LOG.error("Error while getWithSql Entity. M: " + e.getMessage()
-					+ " C: " + e.getCause() + " SQL: " + query);
+					+ " C: " + e.getCause() + " SQL: " + query, e);
 		}
 		return entity;
 	}
@@ -197,8 +203,9 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 					.list();
 			transaction.commit();
 		} catch (Exception e) {
-			LOG.error("Error while getAllWithSql Entities. M: "
-					+ e.getMessage() + " C: " + e.getCause() + " SQL: " + query);
+			LOG.error(
+					"Error while getAllWithSql Entities. M: " + e.getMessage()
+							+ " C: " + e.getCause() + " SQL: " + query, e);
 		}
 		return ts;
 	}
@@ -211,25 +218,33 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 					.executeUpdate();
 			transaction.commit();
 		} catch (Exception e) {
-			LOG.error("Error while executeSQLQuery Entities. M: "
-					+ e.getMessage() + " C: " + e.getCause() + " SQL: " + query);
+			LOG.error(
+					"Error while executeSQLQuery Entities. M: "
+							+ e.getMessage() + " C: " + e.getCause() + " SQL: "
+							+ query, e);
 		}
 	}
 
 	protected List<T> findAllByCriteria(Criterion... criterions) {
+		return findAllByCriteriaAndOrder(null, criterions);
+	}
+
+	protected List<T> findAllByCriteriaAndOrder(Order order,
+			Criterion... criterions) {
 		List<T> ts = null;
 		try {
 			Session session = this.getCurrentSession();
 			Transaction transaction = session.beginTransaction();
-			Criteria criteria = session.createCriteria(getPersistentClass());
-			for (Criterion criterion : criterions) {
-				criteria.add(criterion);
+			Criteria criteria = createCriteria(session, criterions);
+			if (order != null) {
+				criteria.addOrder(order);
 			}
 			ts = criteria.list();
 			transaction.commit();
 		} catch (Exception e) {
-			LOG.error("Error while findAllByCriteria Entities. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error(
+					"Error while findAllByCriteria Entities and Order them. M: "
+							+ e.getMessage() + " C: " + e.getCause(), e);
 		}
 		return ts;
 	}
@@ -239,17 +254,39 @@ public abstract class BaseHibernateDAO<T extends IEntity> implements
 		try {
 			Session session = this.getCurrentSession();
 			Transaction transaction = session.beginTransaction();
-			Criteria criteria = session.createCriteria(getPersistentClass());
-			for (Criterion criterion : criterions) {
-				criteria.add(criterion);
-			}
+			Criteria criteria = createCriteria(session, criterions);
 			t = (T) criteria.uniqueResult();
 			transaction.commit();
 		} catch (Exception e) {
-			LOG.error("Error while findByCriteria Entities. M: "
-					+ e.getMessage() + " C: " + e.getCause());
+			LOG.error("Error while findByCriteria Entiry. M: " + e.getMessage()
+					+ " C: " + e.getCause(), e);
 		}
 		return t;
 	}
 
+	protected Object findByProjection(Projection projection,
+			Criterion... criterions) {
+		Object result = null;
+		try {
+			Session session = this.getCurrentSession();
+			Transaction transaction = session.beginTransaction();
+			Criteria criteria = createCriteria(session, criterions);
+			criteria.setProjection(projection);
+			result = criteria.uniqueResult();
+			transaction.commit();
+		} catch (Exception e) {
+			LOG.error(
+					"Error while findByCriteria Entities. M: " + e.getMessage()
+							+ " C: " + e.getCause(), e);
+		}
+		return result;
+	}
+
+	protected Criteria createCriteria(Session session, Criterion... criterions) {
+		Criteria criteria = session.createCriteria(getPersistentClass());
+		for (Criterion criterion : criterions) {
+			criteria.add(criterion);
+		}
+		return criteria;
+	}
 }
